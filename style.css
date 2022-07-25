@@ -43,3 +43,10 @@ body{
 .calculator-body .btn{
     /* display: inline-block; */
 }
+
+.main-field input,
+.secondary-field input
+{
+    text-align: right;
+
+}
