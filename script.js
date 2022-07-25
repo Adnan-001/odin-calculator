@@ -41,22 +41,6 @@ function operate(operator, num1, num2) {
     return result;
 }
 
-// function isElementContainClass(element, className)
-// {
-//     if (element.classList.contains(className)) 
-//     {
-//         return true;
-//     }
-//     return false;
-// }
-
-// function removeClassFromElement(element, className) {
-//     if (!isElementContainClass(element, className)) {
-//         return;
-//     }
-//     element.classList.toggle(className);
-// }
-
 function appendCharToTextField(str, tf) {
     if (globalObj.mainTextFieldToBeCleared) 
     {
@@ -158,6 +142,7 @@ function addListenersToOperatorBtns() {
             globalObj.operand1 = num;
             globalObj.operator = e.target.textContent;
             displayOnSecondaryField(`${num} ${globalObj.operator}`);
+            globalObj.decimalFlag = false;
         }); 
     });
 
@@ -183,6 +168,7 @@ function addListenerToEqualBtn() {
         displayOnSecondaryField(`${globalObj.operand1} ${globalObj.operator} ${globalObj.operand2} = `);
 
         globalObj.operand1 = null;
+        globalObj.decimalFlag = false;
     });
 }
 
@@ -207,7 +193,8 @@ function addListenerToCEBtn(){
     const clearBtn = document.querySelector('.btn.CE button');
 
     clearBtn.onclick = function () {
-        displayOnMainField('');        
+        displayOnMainField('');     
+        globalObj.decimalFlag = false;   
     }
 }
 
