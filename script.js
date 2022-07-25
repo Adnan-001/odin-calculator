@@ -168,7 +168,7 @@ function addListenerToEqualBtn() {
 
     equalBtn.addEventListener('click', e => {
 
-        if (!globalObj.operand1) {
+        if (!globalObj.operand1 || globalObj.mainTextFieldToBeCleared) {
             return;
         }
 
@@ -184,15 +184,36 @@ function addListenerToEqualBtn() {
 
         globalObj.operand1 = null;
     });
+}
 
+function resetGlobalObj() {
+    globalObj.decimalFlag = false;
+    globalObj.mainTextFieldToBeCleared = false;
+    globalObj.operand1 = globalObj.operand2 = globalObj.operator = null;
+}
 
-   
+function addListenerToCBtn(){
+    const clearBtn = document.querySelector('.btn.C button');
 
+    clearBtn.onclick = function () {
+        displayOnMainField('');
+        displayOnSecondaryField('');
+        
+        resetGlobalObj();
+    }
+}
+
+function addListenerToCEBtn(){
+    const clearBtn = document.querySelector('.btn.CE button');
+
+    clearBtn.onclick = function () {
+        displayOnMainField('');        
+    }
 }
 
 let globalObj = {
     decimalFlag : false,
-    operand1Flag : false,
+    mainTextFieldToBeCleared : false, 
     operator : null,
     operand1 : null,
     operand2 : null,
@@ -203,3 +224,5 @@ addListenersToNumericBtns();
 addListenersToDecimalBtn();
 addListenersToOperatorBtns();
 addListenerToEqualBtn();
+addListenerToCBtn();
+addListenerToCEBtn();
