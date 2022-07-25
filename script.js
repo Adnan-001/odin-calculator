@@ -96,6 +96,7 @@ function addListenersToDecimalBtn() {
     }
 }
 
+// gets data from main text-field
 function getOperand() {
     const mainTextField = document.querySelector('.calculator-display .main-field input');
 
@@ -163,13 +164,35 @@ function addListenersToOperatorBtns() {
 }
 
 function addListenerToEqualBtn() {
-    // const equalBtn = document.querySelector()
+    const equalBtn = document.querySelector('.btn.equal  button');
+
+    equalBtn.addEventListener('click', e => {
+
+        if (!globalObj.operand1) {
+            return;
+        }
+
+        globalObj.operand2 = getOperand();
+        if (!globalObj.operand2) {
+            return;
+        }
+    
+        let result = operate(globalObj.operator, globalObj.operand1, globalObj.operand2);
+    
+        displayOnMainField(result)
+        displayOnSecondaryField(`${globalObj.operand1} ${globalObj.operator} ${globalObj.operand2} = `);
+
+        globalObj.operand1 = null;
+    });
+
+
+   
+
 }
 
 let globalObj = {
     decimalFlag : false,
     operand1Flag : false,
-    mainTextFieldToBeCleared : false, 
     operator : null,
     operand1 : null,
     operand2 : null,
