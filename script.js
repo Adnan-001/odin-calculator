@@ -29,11 +29,11 @@ function operate(operator, num1, num2) {
             result = subtract(num1, num2);        
             break;
 
-        case 'X': case '*':
+        case 'X': case '*': case '×':
             result = multiply(num1, num2);        
             break;
 
-        case '/': 
+        case '/': case '÷':
             result = divide(num1, num2);        
             break;
     }
@@ -292,9 +292,15 @@ function addKeyboardListeners() {
                 
             case '+':
             case '-':
-            case '*':
-            case '/':
                 performOperatorBtnOperation(e.key);
+                break;
+
+            case '*':
+                performOperatorBtnOperation('×');
+                break;
+
+            case '/':
+                performOperatorBtnOperation('÷');
                 break;
         }
     });
