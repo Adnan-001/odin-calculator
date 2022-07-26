@@ -37,15 +37,15 @@ function operate(operator, num1, num2) {
             result = divide(num1, num2);        
             break;
     }
-
-    console.log('type od res: ', typeof result);
-    console.log('res: ', result);
     
-    if (isFinite(result)) {
+    if (!isFinite(result)) {
+        globalObj.errorFlag = true;
         return result;        
     }
 
-    globalObj.errorFlag = true;
+    if (!Number.isInteger(result)) {
+        return +result.toFixed(4);
+    }
     return result;
 }
 
@@ -271,8 +271,6 @@ function addKeyboardListeners() {
     const mainTextField = document.querySelector('.calculator-display .main-field input');
 
     document.addEventListener('keydown', e => {
-
-        console.log(e.key);
 
         if (e.key >= 0 && e.key <=9) {
             appendCharToTextField(e.key, mainTextField);
