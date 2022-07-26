@@ -29,7 +29,7 @@ function operate(operator, num1, num2) {
             result = subtract(num1, num2);        
             break;
 
-        case 'X': 
+        case 'X': case '*':
             result = multiply(num1, num2);        
             break;
 
@@ -75,22 +75,24 @@ function addListenersToNumericBtns() {
     });
 }
 
+function performDecimalBtnOperation(params) {
+    const mainTextField = document.querySelector('.calculator-display .main-field input');
+
+    if (globalObj.decimalFlag) {
+        return;     // in-case there already is a decimal flag in text-field
+    }
+
+    mainTextField.value === '' || globalObj.mainTextFieldToBeCleared ? 
+    appendCharToTextField('0.', mainTextField) :
+    appendCharToTextField('.', mainTextField);
+
+    globalObj.decimalFlag = true;
+}
+
 function addListenersToDecimalBtn() {
     const decimalBtn = document.querySelector('.btn.deci button');
 
-    const mainTextField = document.querySelector('.calculator-display .main-field input');
-
-    decimalBtn.onclick = (e) => {
-        if (globalObj.decimalFlag) {
-            return;     // in-case there already is a decimal flag in text-field
-        }
-
-        mainTextField.value === '' || globalObj.mainTextFieldToBeCleared ? 
-        appendCharToTextField('0.', mainTextField) :
-        appendCharToTextField('.', mainTextField);
-
-        globalObj.decimalFlag = true;
-    }
+    decimalBtn.onclick = performDecimalBtnOperation;
 }
 
 // gets data from main text-field
@@ -118,73 +120,78 @@ function displayOnMainField(str) {
     mainDisplayField.value = str;
 }
 
+function performOperatorBtnOperation(operator) {
+    if (globalObj.errorFlag) {
+        return;
+    }
+
+    // if user has entered operand1 and operator but now wants to change the operator
+    if (globalObj.operand1 && globalObj.mainTextFieldToBeCleared) 
+    {
+        globalObj.operator = operator;
+        displayOnSecondaryField(`${globalObj.operand1} ${globalObj.operator}`);
+        return;
+    }
+
+    let num = getDataFromMainField();
+    if (!num) {
+        return;
+    }
+
+    // if user has entered both operands and operator, and wants to operate a new 
+    //  operator on the result of previous operation
+    if (globalObj.operand1 && !globalObj.mainTextFieldToBeCleared) 
+    {
+        globalObj.operand2 = num;
+        globalObj.operand1 = operate(globalObj.operator, globalObj.operand1, globalObj.operand2);
+        globalObj.operator = operator;
+
+        displayOnMainField(globalObj.operand1)
+        displayOnSecondaryField(`${globalObj.operand1} ${globalObj.operator}`);
+
+        return;
+    }
+
+    globalObj.operand1 = num;
+    globalObj.operator = operator;
+    displayOnSecondaryField(`${num} ${globalObj.operator}`);
+    globalObj.decimalFlag = false;
+}
+
 function addListenersToOperatorBtns() {
     const operatorBtns = document.querySelectorAll('.btn.operator button');
 
     operatorBtns.forEach(button => {
         button.addEventListener('click', e => {
-            if (globalObj.errorFlag) {
-                return;
-            }
-
-            // if user has entered operand1 and operator but now wants to change the operator
-            if (globalObj.operand1 && globalObj.mainTextFieldToBeCleared) 
-            {
-                globalObj.operator = e.target.textContent;
-                displayOnSecondaryField(`${globalObj.operand1} ${globalObj.operator}`);
-                return;
-            }
-
-            let num = getDataFromMainField();
-            if (!num) {
-                return;
-            }
-
-            // if user has entered both operands and operator, and wants to operate a new 
-            //  operator on the result of previous operation
-            if (globalObj.operand1 && !globalObj.mainTextFieldToBeCleared) 
-            {
-                globalObj.operand2 = num;
-                globalObj.operand1 = operate(globalObj.operator, globalObj.operand1, globalObj.operand2);
-                globalObj.operator = e.target.textContent;
-
-                displayOnMainField(globalObj.operand1)
-                displayOnSecondaryField(`${globalObj.operand1} ${globalObj.operator}`);
-
-                return;
-            }
-
-            globalObj.operand1 = num;
-            globalObj.operator = e.target.textContent;
-            displayOnSecondaryField(`${num} ${globalObj.operator}`);
-            globalObj.decimalFlag = false;
+            performOperatorBtnOperation(e.target.textContent);
         }); 
     });
 
 }
 
+function performEqualBtnOperation() {
+    if (!globalObj.operand1 || globalObj.mainTextFieldToBeCleared) {
+        return;
+    }
+
+    globalObj.operand2 = getDataFromMainField();
+    if (!globalObj.operand2) {
+        return;
+    }
+
+    let result = operate(globalObj.operator, globalObj.operand1, globalObj.operand2);
+
+    displayOnMainField(result)
+    displayOnSecondaryField(`${globalObj.operand1} ${globalObj.operator} ${globalObj.operand2} = `);
+
+    globalObj.operand1 = null;
+    globalObj.decimalFlag = false;   
+}
+
 function addListenerToEqualBtn() {
     const equalBtn = document.querySelector('.btn.equal  button');
 
-    equalBtn.addEventListener('click', e => {
-
-        if (!globalObj.operand1 || globalObj.mainTextFieldToBeCleared) {
-            return;
-        }
-
-        globalObj.operand2 = getDataFromMainField();
-        if (!globalObj.operand2) {
-            return;
-        }
-    
-        let result = operate(globalObj.operator, globalObj.operand1, globalObj.operand2);
-    
-        displayOnMainField(result)
-        displayOnSecondaryField(`${globalObj.operand1} ${globalObj.operator} ${globalObj.operand2} = `);
-
-        globalObj.operand1 = null;
-        globalObj.decimalFlag = false;
-    });
+    equalBtn.addEventListener('click', performEqualBtnOperation);
 }
 
 function resetGlobalObj() {
@@ -214,26 +221,28 @@ function addListenerToCEBtn(){
     }
 }
 
+function performBackspaceOperation() {
+    if (globalObj.errorFlag ||  globalObj.mainTextFieldToBeCleared) 
+    {
+        displayOnMainField('');
+        displayOnSecondaryField('');
+        resetGlobalObj();           
+        globalObj.decimalFlag = false;   
+        return;
+    }
+
+    let data = getDataFromMainField();
+    if (!data) {
+        return;
+    }
+
+    displayOnMainField(data.slice(0, data.length-1));
+}
+
 function addListenerToBackspaceBtn() {
     const backspaceBtn = document.querySelector('.btn.backspace button');
 
-    backspaceBtn.onclick = function () {
-        if (globalObj.errorFlag ||  globalObj.mainTextFieldToBeCleared) 
-        {
-            displayOnMainField('');
-            displayOnSecondaryField('');
-            resetGlobalObj();           
-            globalObj.decimalFlag = false;   
-            return;
-        }
-
-        let data = getDataFromMainField();
-        if (!data) {
-            return;
-        }
-
-        displayOnMainField(data.slice(0, data.length-1));
-    }
+    backspaceBtn.onclick = performBackspaceOperation;
 }
 
 function addListenerToUnaryMinusBtn() {
@@ -258,6 +267,41 @@ function addListenerToUnaryMinusBtn() {
     }
 }
 
+function addKeyboardListeners() {
+    const mainTextField = document.querySelector('.calculator-display .main-field input');
+
+    document.addEventListener('keydown', e => {
+
+        console.log(e.key);
+
+        if (e.key >= 0 && e.key <=9) {
+            appendCharToTextField(e.key, mainTextField);
+            return;
+        }
+
+        switch (e.key) {
+            case '.':
+                performDecimalBtnOperation();
+                break;
+        
+            case 'Enter':
+                performEqualBtnOperation();
+                break;
+
+            case 'Backspace':
+                performBackspaceOperation();
+                break;
+                
+            case '+':
+            case '-':
+            case '*':
+            case '/':
+                performOperatorBtnOperation(e.key);
+                break;
+        }
+    });
+}
+
 let globalObj = {
     decimalFlag : false,
     mainTextFieldToBeCleared : false,
@@ -276,3 +320,5 @@ addListenerToCBtn();
 addListenerToCEBtn();
 addListenerToBackspaceBtn();
 addListenerToUnaryMinusBtn();
+
+addKeyboardListeners();
