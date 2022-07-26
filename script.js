@@ -12,7 +12,7 @@ function multiply(num1, num2) {
 }
 
 function divide(num1, num2) {
-    if (num2 !== 0) {
+    if (+num2 !== 0) {
         return num1/num2;
     }
 }
@@ -38,6 +38,14 @@ function operate(operator, num1, num2) {
             break;
     }
 
+    console.log('type od res: ', typeof result);
+    console.log('res: ', result);
+    
+    if (isFinite(result)) {
+        return result;        
+    }
+
+    globalObj.errorFlag = true;
     return result;
 }
 
@@ -72,7 +80,7 @@ function addListenersToDecimalBtn() {
             return;     // in-case there already is a decimal flag in text-field
         }
 
-        mainTextField.value === '' ? 
+        mainTextField.value === '' || globalObj.mainTextFieldToBeCleared ? 
         appendCharToTextField('0.', mainTextField) :
         appendCharToTextField('.', mainTextField);
 
@@ -81,15 +89,14 @@ function addListenersToDecimalBtn() {
 }
 
 // gets data from main text-field
-function getOperand() {
+function getDataFromMainField() {
     const mainTextField = document.querySelector('.calculator-display .main-field input');
 
     if (!mainTextField.value) {
         return;
     }
 
-    // mainTextField.classList.add('to-be-cleared');
-    return (mainTextField.value);
+    return mainTextField.value;
 }
 
 function displayOnSecondaryField(str) {
@@ -120,7 +127,7 @@ function addListenersToOperatorBtns() {
                 return;
             }
 
-            let num = getOperand();
+            let num = getDataFromMainField();
             if (!num) {
                 return;
             }
@@ -157,7 +164,7 @@ function addListenerToEqualBtn() {
             return;
         }
 
-        globalObj.operand2 = getOperand();
+        globalObj.operand2 = getDataFromMainField();
         if (!globalObj.operand2) {
             return;
         }
@@ -175,6 +182,7 @@ function addListenerToEqualBtn() {
 function resetGlobalObj() {
     globalObj.decimalFlag = false;
     globalObj.mainTextFieldToBeCleared = false;
+    globalObj.errorFlag = false;
     globalObj.operand1 = globalObj.operand2 = globalObj.operator = null;
 }
 
@@ -184,7 +192,7 @@ function addListenerToCBtn(){
     clearBtn.onclick = function () {
         displayOnMainField('');
         displayOnSecondaryField('');
-        
+
         resetGlobalObj();
     }
 }
@@ -198,9 +206,36 @@ function addListenerToCEBtn(){
     }
 }
 
+function addListenerToBackspaceBtn() {
+    const backspaceBtn = document.querySelector('.btn.backspace button');
+
+    backspaceBtn.onclick = function () {
+        let data = getDataFromMainField();
+        if (!data) {
+            return;
+        }
+
+        console.log(data.length);
+        console.log(typeof data);
+
+        if (globalObj.errorFlag ||  globalObj.mainTextFieldToBeCleared) 
+        {
+            displayOnMainField('');
+            displayOnSecondaryField('');
+            resetGlobalObj();           
+            globalObj.decimalFlag = false;   
+            return;
+        }
+
+        displayOnMainField(data.slice(0, data.length-1));
+
+    }
+}
+
 let globalObj = {
     decimalFlag : false,
-    mainTextFieldToBeCleared : false, 
+    mainTextFieldToBeCleared : false,
+    errorFlag : false,
     operator : null,
     operand1 : null,
     operand2 : null,
@@ -213,3 +248,4 @@ addListenersToOperatorBtns();
 addListenerToEqualBtn();
 addListenerToCBtn();
 addListenerToCEBtn();
+addListenerToBackspaceBtn();
