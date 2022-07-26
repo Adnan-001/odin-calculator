@@ -1,5 +1,6 @@
-body{
-    /* height: 100vh; */
+
+*{
+    box-sizing: border-box;
 }
 
 .content {
@@ -8,45 +9,83 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
+    user-select: none;
 }
 
 .calculator-display {
     display: flex; 
     flex-direction: column;
     align-items: center; 
+    justify-content: space-evenly;
 
+    height: 150px;
+    background-color: #1f1f1f;
 }
 
 .calculator-display div, .calculator-display input    {
-    width: 95%;
-
+    width: 330px;
+    background-color: #1f1f1f;
 }
 
-.calculator-body{
-    width: 300px;
-    height: 300px; 
 
+
+.calculator-body{
+    width: 350px;
+    height: 400px; 
+    background-color: #1f1f1f;
+
+    flex-shrink: 0;
     display: flex;
     flex-wrap: wrap; 
-    justify-content: space-around;
-    
+    justify-content: space-evenly;
+    align-content: space-around;    
 }
 
 .calculator-body button {
-    width: 70px;
-    height: 60px;
+    width: 85px;
+    height: 78px;
+    color: white;
+    border: 0;
+    
 
-    /* padding: 0; */
-    /* border: 0; */
+    background-color: #131313;
+    font-size: 16px;
+    font-weight: 900;
 }
 
-.calculator-body .btn{
-    /* display: inline-block; */
+.calculator-body .number button{
+    background-color: #060606;
+    color: white;
+}
+
+.btn.equal button {
+    background-color: #133a59;
+    font-size: 24px;
+}
+
+.btn.deci button,
+.btn.operator button
+{
+    font-size: 24px;
 }
 
 .main-field input,
 .secondary-field input
 {
     text-align: right;
-
+    border: 0;
 }
+
+.main-field input {
+    color: white;
+    font-size: 36px;
+    font-weight: 700;
+    
+}
+
+.secondary-field input {
+    color: #CAD0CF;
+    font-size: 24px;
+    font-weight: 700;
+}
+
