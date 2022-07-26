@@ -50,6 +50,11 @@ function operate(operator, num1, num2) {
 }
 
 function appendCharToTextField(str, tf) {
+    //  if previous calculation was an error and user enters a new 'input', clear the error flag
+    if (globalObj.errorFlag) {
+        globalObj.errorFlag = false;
+    }
+
     if (globalObj.mainTextFieldToBeCleared) 
     {
         tf.value = '';
@@ -118,6 +123,9 @@ function addListenersToOperatorBtns() {
 
     operatorBtns.forEach(button => {
         button.addEventListener('click', e => {
+            if (globalObj.errorFlag) {
+                return;
+            }
 
             // if user has entered operand1 and operator but now wants to change the operator
             if (globalObj.operand1 && globalObj.mainTextFieldToBeCleared) 
@@ -210,14 +218,6 @@ function addListenerToBackspaceBtn() {
     const backspaceBtn = document.querySelector('.btn.backspace button');
 
     backspaceBtn.onclick = function () {
-        let data = getDataFromMainField();
-        if (!data) {
-            return;
-        }
-
-        console.log(data.length);
-        console.log(typeof data);
-
         if (globalObj.errorFlag ||  globalObj.mainTextFieldToBeCleared) 
         {
             displayOnMainField('');
@@ -227,8 +227,12 @@ function addListenerToBackspaceBtn() {
             return;
         }
 
-        displayOnMainField(data.slice(0, data.length-1));
+        let data = getDataFromMainField();
+        if (!data) {
+            return;
+        }
 
+        displayOnMainField(data.slice(0, data.length-1));
     }
 }
 
