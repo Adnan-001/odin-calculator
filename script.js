@@ -236,6 +236,28 @@ function addListenerToBackspaceBtn() {
     }
 }
 
+function addListenerToUnaryMinusBtn() {
+    const btn = document.querySelector('.btn.unary-minus button');
+
+    btn.onclick = function () {
+        if (globalObj.errorFlag || globalObj.mainTextFieldToBeCleared) 
+        {
+            return;
+        }
+
+        let data = getDataFromMainField();
+        if (!data || data === '0') {
+            return;
+        }
+
+        if (data.charAt(0) === '-') {
+            displayOnMainField(data.slice(1));
+            return;
+        }
+        displayOnMainField('-'+data);
+    }
+}
+
 let globalObj = {
     decimalFlag : false,
     mainTextFieldToBeCleared : false,
@@ -253,3 +275,4 @@ addListenerToEqualBtn();
 addListenerToCBtn();
 addListenerToCEBtn();
 addListenerToBackspaceBtn();
+addListenerToUnaryMinusBtn();
