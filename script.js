@@ -38,18 +38,27 @@ function operate(operator, num1, num2) {
             break;
     }
     
+    // console.log(result);
+
     if (!isFinite(result)) {
         globalObj.errorFlag = true;
-        return result;        
+        return 'ERROR!';       
     }
 
     if (!Number.isInteger(result)) {
+        console.log(result);
         return +result.toFixed(4);
     }
-    return result;
+
+    if (result.toString().length > 15) {
+        return result.toPrecision(4);   // if result is longer than display field
+    }
+
+    return +result.toPrecision(4);
 }
 
 function appendCharToTextField(str, tf) {
+
     //  if previous calculation was an error and user enters a new 'input', clear the error flag
     if (globalObj.errorFlag) {
         globalObj.errorFlag = false;
@@ -59,6 +68,11 @@ function appendCharToTextField(str, tf) {
     {
         tf.value = '';
         globalObj.mainTextFieldToBeCleared = false;
+    }
+
+    if (str === '0' && tf.value === '0'
+    || tf.value.length === 15) {
+    return;
     }
 
     tf.value = tf.value+str;
@@ -324,5 +338,4 @@ addListenerToCBtn();
 addListenerToCEBtn();
 addListenerToBackspaceBtn();
 addListenerToUnaryMinusBtn();
-
 addKeyboardListeners();
