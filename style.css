@@ -1,19 +1,22 @@
 
 *{
     box-sizing: border-box;
+    user-select: none;
+
 }
 
 body{
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    padding: 0;
+    margin-top: 30px;
+    background-color: #CAD0CF;
 }
 
 .content {
-    height: 80vh;
+    height: 100vh;
 
     display: flex;
     justify-content: center;
-    align-items: center;
-    user-select: none;
 }
 
 .calculator-display {
@@ -66,7 +69,8 @@ body{
 }
 
 .btn.deci button,
-.btn.operator button
+.btn.operator button,
+.btn.unary-minus button
 {
     font-size: 24px;
 }
@@ -87,7 +91,7 @@ body{
 
 .secondary-field input {
     color: #CAD0CF;
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 700;
 }
 
